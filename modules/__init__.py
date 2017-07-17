@@ -42,6 +42,13 @@ def search(input, sender=None, postback=False):
         entities = payload['entities']
     else:
         intent, entities = process_query(input)
+    if intent == "quote":
+        data = sys.modules['modules.src.' + intent].process(input, entities)
+        if data['success']:
+            return data['output']
+        else:
+            if 'error_msg' in data:
+                return data['error_msg']
     if intent is not None:
         if intent in src.__personalized__ and sender is not None:
             r = requests.get('https://graph.facebook.com/v2.6/' + str(sender), params={
